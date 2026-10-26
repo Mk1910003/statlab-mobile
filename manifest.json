@@ -1,0 +1,10 @@
+{
+  "name": "StatLab Mobile",
+  "short_name": "StatLab",
+  "description": "Mobile-first statistical analysis workspace",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f7f8",
+  "theme_color": "#123c50",
+  "icons": []
+}

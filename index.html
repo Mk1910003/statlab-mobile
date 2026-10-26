@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123c50">
+  <meta name="description" content="Mobile-friendly statistical analysis workspace">
+  <link rel="manifest" href="./manifest.json">
+  <title>StatLab Mobile</title>
+  <style>
+    :root{--navy:#123c50;--teal:#16866c;--bg:#f3f7f8;--ink:#172b35;--muted:#5c7079;--line:#d9e4e8}
+    *{box-sizing:border-box} body{margin:0;font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+    header{background:var(--navy);color:white;padding:22px 16px 20px;border-radius:0 0 22px 22px}
+    header h1{margin:0;font-size:25px} header p{margin:5px 0 0;color:#d5e6ec;font-size:14px}
+    main{max-width:1000px;margin:auto;padding:14px;display:grid;gap:14px}
+    .panel{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 2px 10px #123c500a}
+    h2{font-size:18px;margin:0 0 10px} h3{font-size:15px;margin:12px 0 6px}
+    .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+    button,.filelabel{border:0;border-radius:10px;padding:11px 14px;background:var(--teal);color:white;font-weight:650;font-size:14px;cursor:pointer}
+    button.secondary{background:#e8f1f3;color:var(--navy)} button:disabled{opacity:.45;cursor:not-allowed}
+    input,select{max-width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:white;font:inherit}
+    input[type=file]{display:none}.hint,.muted{font-size:13px;color:var(--muted)}
+    .metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .metric{background:#f4f8f8;border:1px solid var(--line);border-radius:12px;padding:11px}
+    .metric .label{font-size:12px;color:var(--muted)}.metric .value{font-size:20px;font-weight:750;overflow-wrap:anywhere}
+    .tablewrap{overflow:auto;max-height:320px;border:1px solid var(--line);border-radius:10px}
+    table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}td,th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}th{background:#edf4f5;position:sticky;top:0}
+    .status{padding:9px 11px;background:#edf6f2;border-radius:9px;font-size:13px;color:#17634f;margin-top:8px}
+    .error{background:#fff0ee;color:#9d2b20}.chart{width:100%;height:210px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    footer{text-align:center;color:var(--muted);font-size:12px;padding:4px 15px 22px}
+    @media(min-width:760px){main{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  </style>
+</head>
+<body>
+<header><h1>📊 StatLab Mobile</h1><p>Your data. Your analysis. · Early MVP</p></header>
+<main>
+  <section class="panel wide">
+    <h2>1. Import data</h2>
+    <div class="row">
+      <label class="filelabel" for="file">Choose CSV file</label><input id="file" type="file" accept=".csv,text/csv">
+      <button id="sample" class="secondary">Load sample data</button>
+      <button id="download" class="secondary" disabled>Download current data</button>
+    </div>
+    <p class="hint">CSV only in this first version. The analysis runs in your browser; files are not uploaded to a server.</p>
+    <div id="status" class="status">Load sample data or choose a CSV file to begin.</div>
+  </section>
+
+  <section class="panel wide">
+    <h2>2. Data preview</h2>
+    <div id="dimensions" class="muted">No dataset loaded</div>
+    <div class="tablewrap" style="margin-top:9px"><table id="preview"><tbody><tr><td>Data will appear here.</td></tr></tbody></table></div>
+  </section>
+
+  <section class="panel wide">
+    <h2>3. Descriptive statistics</h2>
+    <div class="row">
+      <label for="variable">Numeric variable</label><select id="variable" disabled></select>
+      <button id="describe" disabled>Calculate</button>
+    </div>
+    <div id="metrics" class="metrics" style="margin-top:12px"></div>
+    <div id="frequency" class="muted" style="margin-top:8px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>4. Correlation</h2>
+    <div class="row"><label for="xcor">Variable X</label><select id="xcor" disabled></select></div>
+    <div class="row" style="margin-top:8px"><label for="ycor">Variable Y</label><select id="ycor" disabled></select></div>
+    <button id="correlate" disabled style="margin-top:9px">Calculate Pearson r</button>
+    <div id="corResult" class="status">Choose two numeric variables.</div>
+  </section>
+
+  <section class="panel">
+    <h2>5. Simple linear regression</h2>
+    <div class="row"><label for="xreg">Predictor X</label><select id="xreg" disabled></select></div>
+    <div class="row" style="margin-top:8px"><label for="yreg">Outcome Y</label><select id="yreg" disabled></select></div>
+    <button id="regress" disabled style="margin-top:9px">Fit regression</button>
+    <div id="regResult" class="status">Model: Y = intercept + slope × X.</div>
+  </section>
+
+  <section class="panel wide">
+    <h2>6. Simple histogram</h2>
+    <div class="row"><label for="histvar">Numeric variable</label><select id="histvar" disabled></select><button id="hist" disabled>Draw histogram</button></div>
+    <canvas id="chart" class="chart" width="900" height="300" aria-label="Histogram chart"></canvas>
+  </section>
+
+  <section class="panel wide">
+    <h2>Roadmap</h2>
+    <p class="muted">This MVP currently supports CSV import, preview, descriptive statistics, Pearson correlation, simple linear regression, a histogram and CSV download. It is not yet a replacement for SPSS/R. Statistical tests, Excel import, project saving, reports, user accounts and paid plans are future milestones.</p>
+  </section>
+</main>
+<footer>StatLab Mobile · Prototype · Validate results before academic or professional use.</footer>
+<script src="./app.js"></script>
+</body>
+</html>
